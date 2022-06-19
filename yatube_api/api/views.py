@@ -30,6 +30,7 @@ class CommentViewSet(viewsets.ModelViewSet):
                           IsAuthorOrReadOnly]
 
     def perform_create(self, serializer):
+        get_object_or_404(Post, pk=self.kwargs.get('post_id'))
         serializer.save(author=self.request.user)
 
     def get_queryset(self):
