@@ -29,10 +29,12 @@ class CommentViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated,
                           IsAuthorOrReadOnly]
 
-    def perform_create(self, serializer):
-        get_object_or_404(Post, pk=self.kwargs.get('post_id'))
-        serializer.save(author=self.request.user)
+    def get_post(self):
+        return get_object_or_404(Post, pk=self.kwargs.get('post_id'))
 
     def get_queryset(self):
-        post = get_object_or_404(Post, pk=self.kwargs.get('post_id'))
-        return post.comments.all()
+        return self.get_post().comments.all()
+
+    def perform_create(self, serializer):
+        post = self.get_post()
+        serializer.save(author=self.request.user, post=post)
